@@ -52,11 +52,6 @@ class BrowseFragment : Fragment() {
             is AppStateHealthBD.Success ->{
                 if (appStateDB.healthInfoHistoryData.isEmpty()){
                     createTableHealth()
-                    val drowseData = mutableListOf<Triple<Int, String, String>>()
-                    appStateDB.healthInfoHistoryData.forEach {
-                        drowseData.add(Triple(ITEM_CLOSE, it.nameHealth, it.textHealth))
-                    }
-                    adapter.setBrowse(drowseData)
                 } else {
                     val drowseData = mutableListOf<Triple<Int, String, String>>()
                     appStateDB.healthInfoHistoryData.forEach {
@@ -106,6 +101,7 @@ class BrowseFragment : Fragment() {
         ).forEach {
             historyViewModel.saveHealth(HealthDTO(it,""))
         }
+        historyViewModel.getAllHealthHistory()
     }
 
     companion object {
