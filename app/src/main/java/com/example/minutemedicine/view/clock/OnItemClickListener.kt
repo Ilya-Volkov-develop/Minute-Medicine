@@ -2,7 +2,7 @@ package com.example.minutemedicine.view.clock
 
 import com.example.minutemedicine.model.ReminderDTO
 
-
 interface OnItemClickListener {
-    fun onItemClick(reminderDTO: ReminderDTO, tools:String)
+    fun onItemClickGetSize(size:Int)
+    fun onItemClickWorker(reminder: ReminderDTO, isChecked: Boolean)
 }

@@ -1,5 +1,6 @@
 package com.example.minutemedicine.view.home
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,13 @@ import com.example.minutemedicine.databinding.FragmentReminderRecyclerItemBindin
 import com.example.minutemedicine.model.ReminderDTO
 import com.example.minutemedicine.repository.RepositoryHistoryImpl
 
-class HomeFragmentAdapter() :
+class HomeFragmentAdapter(val listener: OnItemClickListener) :
     RecyclerView.Adapter<HomeFragmentAdapter.HomeFragmentReminderHolder>() {
 
     private var reminderData: List<ReminderDTO> = listOf()
     private val repositoryHistoryImpl: RepositoryHistoryImpl by lazy { RepositoryHistoryImpl() }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setReminder(data: List<ReminderDTO>) {
         this.reminderData = data
         notifyDataSetChanged()
@@ -28,17 +30,17 @@ class HomeFragmentAdapter() :
     }
 
     override fun onBindViewHolder(holder: HomeFragmentReminderHolder, position: Int) {
-        holder.bind(this.reminderData[position],position)
+        holder.bind(this.reminderData[position])
     }
 
     override fun getItemCount(): Int {
         return if (reminderData.size > 3)
-            return 3
-        else return reminderData.size
+            3
+        else reminderData.size
     }
 
     inner class HomeFragmentReminderHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(reminderDTO: ReminderDTO, position: Int) {
+        fun bind(reminderDTO: ReminderDTO) {
             FragmentReminderRecyclerItemBinding.bind(itemView).run {
                 nameMedicament.text = reminderDTO.nameMedicament
                 howApply.text = reminderDTO.howApply
@@ -60,6 +62,7 @@ class HomeFragmentAdapter() :
                             reminderDTO.details
                         )
                     )
+                    listener.onItemClick(reminderDTO,switchBtn.isChecked)
                 }
             }
         }

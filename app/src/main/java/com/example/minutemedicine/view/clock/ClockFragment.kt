@@ -9,9 +9,11 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
+import androidx.work.WorkManager
 import com.example.minutemedicine.R
 import com.example.minutemedicine.databinding.FragmentClockBinding
 import com.example.minutemedicine.model.ReminderDTO
+import com.example.minutemedicine.repository.CreateWorker
 import com.example.minutemedicine.viewmodel.AppStateMedicineBD
 import com.example.minutemedicine.viewmodel.HistoryViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -25,11 +27,12 @@ class ClockFragment : Fragment(), OnItemClickListener {
     private val binding get() = _binding!!
     private val adapter: ClockFragmentAdapter by lazy { ClockFragmentAdapter(this) }
     private val historyViewModel: HistoryViewModel by lazy { ViewModelProvider(this)[HistoryViewModel::class.java] }
+    private val createWorker: CreateWorker by lazy { CreateWorker(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentClockBinding.inflate(inflater, container, false)
         CoroutineScope(Dispatchers.Main).launch {
@@ -94,16 +97,18 @@ class ClockFragment : Fragment(), OnItemClickListener {
         _binding = null
     }
 
-    override fun onItemClick(reminderDTO: ReminderDTO, tools:String) {
-        when(tools){
-            "delete"-> {
-                binding.addContainer.visibility = View.VISIBLE
-                binding.todayReminders.visibility = View.GONE
-            }
-            "edit" ->{
-                requireActivity().findViewById<ViewPager>(R.id.viewPager).currentItem = 2
-            }
-            else ->{}
+    override fun onItemClickGetSize(size: Int) {
+        if (size == 0) {
+            binding.addContainer.visibility = View.VISIBLE
+            binding.todayReminders.visibility = View.GONE
+        }
+    }
+
+    override fun onItemClickWorker(reminder: ReminderDTO, isChecked: Boolean) {
+        if (isChecked){
+            createWorker.createNotification(reminder)
+        } else {
+            WorkManager.getInstance(requireContext()).cancelAllWorkByTag(reminder.nameMedicament)
         }
     }
 }

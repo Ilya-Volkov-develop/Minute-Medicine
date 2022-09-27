@@ -60,12 +60,14 @@ class ClockFragmentAdapter(val listener: OnItemClickListener) : RecyclerView.Ada
                             reminderDTO.details
                         )
                     )
+                    listener.onItemClickWorker(reminderDTO, switchBtn.isChecked)
                 }
                 deleteTime.setOnClickListener {
                     data.removeAt(layoutPosition)
                     notifyItemRemoved(layoutPosition)
                     repositoryHistoryImpl.deleteMedicaments(reminderDTO)
-                    listener.onItemClick(reminderDTO,"delete")
+                    listener.onItemClickGetSize(data.size)
+                    listener.onItemClickWorker(reminderDTO, false)
                 }
 
             }

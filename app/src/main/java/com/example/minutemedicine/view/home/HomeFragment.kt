@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
+import androidx.work.WorkManager
 import com.example.minutemedicine.R
 import com.example.minutemedicine.databinding.FragmentHomeBinding
+import com.example.minutemedicine.model.ReminderDTO
+import com.example.minutemedicine.repository.CreateWorker
 import com.example.minutemedicine.viewmodel.AppStateMedicineBD
 import com.example.minutemedicine.viewmodel.HistoryViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -17,13 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(),OnItemClickListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val historyViewModel: HistoryViewModel by lazy { ViewModelProvider(this)[HistoryViewModel::class.java] }
-
-    private val adapter: HomeFragmentAdapter by lazy { HomeFragmentAdapter() }
+    private val createWorker: CreateWorker by lazy { CreateWorker(requireContext()) }
+    private val adapter: HomeFragmentAdapter by lazy { HomeFragmentAdapter(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,5 +85,13 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    override fun onItemClick(reminder: ReminderDTO, isChecked: Boolean) {
+        if (isChecked){
+            createWorker.createNotification(reminder)
+        } else {
+            WorkManager.getInstance(requireContext()).cancelAllWorkByTag(reminder.nameMedicament)
+        }
     }
 }

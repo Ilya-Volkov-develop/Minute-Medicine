@@ -1,21 +1,14 @@
 package com.example.minutemedicine.view.mainscreen
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.marginBottom
-import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.example.minutemedicine.R
 import com.example.minutemedicine.databinding.FragmentMainBinding
 import com.example.minutemedicine.repository.RepositoryHistoryImpl
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 
 
 class MainFragment : Fragment() {

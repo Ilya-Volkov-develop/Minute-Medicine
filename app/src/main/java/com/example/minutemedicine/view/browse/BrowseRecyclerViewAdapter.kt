@@ -63,7 +63,7 @@ class BrowseRecyclerViewAdapter : RecyclerView.Adapter<BrowseRecyclerViewAdapter
                     ObjectAnimator.ofFloat(arrow, View.ROTATION, 0f, 90f).start()
                 else
                     ObjectAnimator.ofFloat(arrow, View.ROTATION, 90f, 0f).start()
-                edit.setOnFocusChangeListener { view, b ->
+                edit.setOnFocusChangeListener { _, b ->
                     if (!b){
                         repositoryHistoryImpl.updateHealth(HealthDTO(title.text.toString(),edit.text.toString()))
                         this@BrowseRecyclerViewAdapter.data[layoutPosition] =

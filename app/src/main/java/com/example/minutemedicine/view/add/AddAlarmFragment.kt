@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager
 import com.example.minutemedicine.R
 import com.example.minutemedicine.databinding.FragmentAddBinding
 import com.example.minutemedicine.model.ReminderDTO
+import com.example.minutemedicine.repository.CreateWorker
 import com.example.minutemedicine.viewmodel.HistoryViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,11 +26,12 @@ class AddAlarmFragment : Fragment() {
     private val adapter: AddTimeAdapter by lazy { AddTimeAdapter() }
     private var timeList = mutableListOf<String>()
     private val historyViewModel: HistoryViewModel by lazy { ViewModelProvider(this)[HistoryViewModel::class.java] }
+    private val createWorker: CreateWorker by lazy { CreateWorker(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentAddBinding.inflate(inflater, container, false)
         CoroutineScope(Dispatchers.Main).launch {
@@ -44,31 +46,10 @@ class AddAlarmFragment : Fragment() {
         binding.repeatingRecycler.adapter = adapter
         workTimePiker()
         workBtn()
-//        binding.spinnerTitle.isEnabled = false
-    }
-
-    private fun fillInfo(reminder: ReminderDTO) {
-        with(binding){
-            spinnerTitle.visibility = View.GONE
-            textTitle.text = reminder.nameMedicament
-            textTitle.visibility = View.VISIBLE
-            editMedicine.setText(reminder.howApply)
-            editDetails.setText(reminder.details)
-            timeList = reminder.time as MutableList<String>
-            adapter.addTime(timeList,0)
-            checkBoxSunday.isChecked = reminder.applicationDays[0].toBoolean()
-            checkBoxMonday.isChecked = reminder.applicationDays[1].toBoolean()
-            checkBoxTuesday.isChecked = reminder.applicationDays[2].toBoolean()
-            checkBoxWednesday.isChecked = reminder.applicationDays[3].toBoolean()
-            checkBoxThursday.isChecked = reminder.applicationDays[4].toBoolean()
-            checkBoxFriday.isChecked = reminder.applicationDays[5].toBoolean()
-            checkBoxSaturday.isChecked = reminder.applicationDays[6].toBoolean()
-            nestedScrollView.scrollY = 0
-        }
     }
 
     private fun workBtn() {
-        with(binding){
+        with(binding) {
             saveBtn.setOnClickListener { saveInfo() }
             saveBtnMini.setOnClickListener { saveInfo() }
             x.setOnClickListener { exit() }
@@ -87,12 +68,11 @@ class AddAlarmFragment : Fragment() {
             } else if (checkBoxWeek()) {
                 Toast.makeText(requireContext(), "Введите checkBox", Toast.LENGTH_SHORT).show()
             } else {
-                historyViewModel.saveMedicine(ReminderDTO(
-                    spinnerTitle.selectedItem.toString(),
-                    editMedicine.text.toString(),
-                    checkBox(), true, timeList,
-                    editDetails.text.toString()
-                ))
+                val result =
+                    ReminderDTO(spinnerTitle.selectedItem.toString(), editMedicine.text.toString(),
+                        checkBox(), true, timeList, editDetails.text.toString())
+                historyViewModel.saveMedicine(result)
+                createWorker.createNotification(result)
                 exit()
             }
         }
@@ -200,12 +180,12 @@ class AddAlarmFragment : Fragment() {
 
     private fun exit() {
         requireActivity().findViewById<ViewPager>(R.id.viewPager).currentItem = 0
-        with(binding){
+        with(binding) {
             spinnerTitle.setSelection(0)
             editMedicine.text.clear()
             editDetails.text.clear()
             timeList = mutableListOf()
-            adapter.addTime(timeList,0)
+            adapter.addTime(timeList, 0)
             checkBoxSunday.isChecked = false
             checkBoxMonday.isChecked = false
             checkBoxTuesday.isChecked = false

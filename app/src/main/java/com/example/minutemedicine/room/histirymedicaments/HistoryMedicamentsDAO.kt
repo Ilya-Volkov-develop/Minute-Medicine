@@ -11,7 +11,7 @@ interface HistoryMedicamentDAO {
     @Delete
     fun delete(entity: HistoryMedicamentEntity)
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
+    @Update(onConflict = OnConflictStrategy.ABORT)
     fun update(entity: HistoryMedicamentEntity):Int
 
     @Query("select * FROM history_medicament_entity")
